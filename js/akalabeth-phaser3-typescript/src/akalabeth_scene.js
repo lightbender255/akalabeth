@@ -910,6 +910,23 @@ export default class AkalabethScene extends Phaser.Scene {
 		this.graphics.strokePath()
 	}
 
+	plotPath(points) {
+		if (!points || points.length === 0) return
+		this.graphics.beginPath()
+		this.graphics.moveTo(this.vx(points[0][0]), this.vy(points[0][1]))
+		for (let i = 1; i < points.length; i++) {
+			this.graphics.lineTo(this.vx(points[i][0]), this.vy(points[i][1]))
+		}
+		this.graphics.strokePath()
+	}
+
+	plotLine(x1, y1, x2, y2) {
+		this.graphics.beginPath()
+		this.graphics.moveTo(this.vx(x1), this.vy(y1))
+		this.graphics.lineTo(this.vx(x2), this.vy(y2))
+		this.graphics.strokePath()
+	}
+
 	drawMonster(mc, dis) {
 		const b = 79 + this.YY[dis]
 		const c = 139
@@ -918,79 +935,507 @@ export default class AkalabethScene extends Phaser.Scene {
 		this.graphics.lineStyle(2, this.COLOR_WHITE, 1)
 
 		if (mc === 1) {
-			// SKELETON
-			this.graphics.beginPath()
-			this.graphics.moveTo(this.vx(c - 23 / di), this.vy(b))
-			this.graphics.lineTo(this.vx(c - 15 / di), this.vy(b))
-			this.graphics.lineTo(this.vx(c - 15 / di), this.vy(b - 15 / di))
-			this.graphics.lineTo(this.vx(c - 8 / di), this.vy(b - 30 / di))
-			this.graphics.lineTo(this.vx(c + 8 / di), this.vy(b - 30 / di))
-			this.graphics.lineTo(this.vx(c + 15 / di), this.vy(b - 15 / di))
-			this.graphics.lineTo(this.vx(c + 15 / di), this.vy(b))
-			this.graphics.lineTo(this.vx(c + 23 / di), this.vy(b))
+			// SKELETON (lines 810-860 in AKLABETH.BAS, as in MNSTR-01.GIF)
+			// 810 Pelvis & Legs
+			this.plotPath([
+				[c - 23 / di, b],
+				[c - 15 / di, b],
+				[c - 15 / di, b - 15 / di],
+				[c - 8 / di, b - 30 / di],
+				[c + 8 / di, b - 30 / di],
+				[c + 15 / di, b - 15 / di],
+				[c + 15 / di, b],
+				[c + 23 / di, b]
+			])
 
-			this.graphics.moveTo(this.vx(c), this.vy(b - 26 / di))
-			this.graphics.lineTo(this.vx(c), this.vy(b - 65 / di))
-			this.graphics.moveTo(this.vx(c - 5 / di), this.vy(b - 53 / di))
-			this.graphics.lineTo(this.vx(c + 5 / di), this.vy(b - 53 / di))
-			this.graphics.strokeCircle(this.vx(c), this.vy(b - 72 / di), (8 / di) * this.SCALE)
-			this.graphics.strokePath()
+			// 820 Spine & Ribs
+			this.plotLine(c, b - 26 / di, c, b - 65 / di)
+			this.plotLine(c - 2 / di + 0.5, b - 38 / di, c + 2 / di + 0.5, b - 38 / di)
+			this.plotLine(c - 3 / di + 0.5, b - 45 / di, c + 3 / di + 0.5, b - 45 / di)
+			this.plotLine(c - 5 / di + 0.5, b - 53 / di, c + 5 / di + 0.5, b - 53 / di)
+
+			// 830 Left Arm holding Axe
+			this.plotPath([
+				[c - 23 / di, b - 56 / di],
+				[c - 30 / di, b - 53 / di],
+				[c - 23 / di, b - 45 / di],
+				[c - 23 / di, b - 53 / di],
+				[c - 8 / di, b - 38 / di]
+			])
+
+			// 840 Shoulders, Right Arm, & Dagger
+			this.plotPath([
+				[c - 15 / di, b - 45 / di],
+				[c - 8 / di, b - 60 / di],
+				[c + 8 / di, b - 60 / di],
+				[c + 15 / di, b - 45 / di]
+			])
+			this.plotLine(c + 15 / di, b - 42 / di, c + 15 / di, b - 57 / di)
+			this.plotLine(c + 12 / di, b - 45 / di, c + 20 / di, b - 45 / di)
+
+			// 850-860 Skull: cranium, teeth, and jawline
+			this.plotPath([
+				[c, b - 75 / di],
+				[c - 5 / di + 0.5, b - 80 / di],
+				[c - 8 / di, b - 75 / di],
+				[c - 5 / di + 0.5, b - 65 / di],
+				[c + 5 / di + 0.5, b - 65 / di],
+				[c + 5 / di + 0.5, b - 68 / di],
+				[c - 5 / di + 0.5, b - 68 / di],
+				[c - 5 / di + 0.5, b - 65 / di],
+				[c + 5 / di + 0.5, b - 65 / di],
+				[c + 8 / di, b - 75 / di],
+				[c + 5 / di + 0.5, b - 80 / di],
+				[c - 5 / di + 0.5, b - 80 / di]
+			])
+
+			// 860 Eyes (magenta/purple artifacting)
+			this.graphics.lineStyle(2, 0xff44ff, 1)
+			this.plotLine(c - 6 / di, b - 72 / di, c - 4 / di, b - 72 / di)
+			this.plotLine(c + 4 / di, b - 72 / di, c + 6 / di, b - 72 / di)
 		} else if (mc === 2) {
-			// THIEF
-			this.graphics.beginPath()
-			this.graphics.moveTo(this.vx(c), this.vy(b - 56 / di))
-			this.graphics.lineTo(this.vx(c), this.vy(b - 8 / di))
-			this.graphics.lineTo(this.vx(c + 10 / di), this.vy(b))
-			this.graphics.lineTo(this.vx(c + 30 / di), this.vy(b))
-			this.graphics.lineTo(this.vx(c + 30 / di), this.vy(b - 45 / di))
-			this.graphics.lineTo(this.vx(c + 10 / di), this.vy(b - 64 / di))
-			this.graphics.lineTo(this.vx(c), this.vy(b - 56 / di))
-			this.graphics.lineTo(this.vx(c - 10 / di), this.vy(b - 64 / di))
-			this.graphics.lineTo(this.vx(c - 30 / di), this.vy(b - 45 / di))
-			this.graphics.lineTo(this.vx(c - 30 / di), this.vy(b))
-			this.graphics.lineTo(this.vx(c - 10 / di), this.vy(b))
-			this.graphics.lineTo(this.vx(c), this.vy(b - 8 / di))
-			this.graphics.moveTo(this.vx(c - 10 / di), this.vy(b - 64 / di))
-			this.graphics.lineTo(this.vx(c - 10 / di), this.vy(b - 75 / di))
-			this.graphics.lineTo(this.vx(c), this.vy(b - 83 / di))
-			this.graphics.lineTo(this.vx(c + 10 / di), this.vy(b - 75 / di))
-			this.graphics.lineTo(this.vx(c), this.vy(b - 79 / di))
-			this.graphics.strokePath()
+			// THIEF (lines 880-900)
+			this.plotPath([
+				[c, b - 56 / di],
+				[c, b - 8 / di],
+				[c + 10 / di, b],
+				[c + 30 / di, b],
+				[c + 30 / di, b - 45 / di],
+				[c + 10 / di, b - 64 / di],
+				[c, b - 56 / di],
+				[c - 10 / di, b - 64 / di],
+				[c - 30 / di, b - 45 / di],
+				[c - 30 / di, b],
+				[c - 10 / di, b],
+				[c, b - 8 / di]
+			])
+			this.plotPath([
+				[c - 10 / di, b - 64 / di],
+				[c - 10 / di, b - 75 / di],
+				[c, b - 83 / di],
+				[c + 10 / di, b - 75 / di],
+				[c, b - 79 / di],
+				[c - 10 / di, b - 75 / di],
+				[c, b - 60 / di],
+				[c + 10 / di, b - 75 / di],
+				[c + 10 / di, b - 64 / di]
+			])
 		} else if (mc === 3) {
-			// GIANT RAT
-			this.graphics.beginPath()
-			this.graphics.moveTo(this.vx(c + 5 / di), this.vy(b - 30 / di))
-			this.graphics.lineTo(this.vx(c), this.vy(b - 25 / di))
-			this.graphics.lineTo(this.vx(c - 5 / di), this.vy(b - 30 / di))
-			this.graphics.lineTo(this.vx(c - 15 / di), this.vy(b - 5 / di))
-			this.graphics.lineTo(this.vx(c - 10 / di), this.vy(b))
-			this.graphics.lineTo(this.vx(c + 10 / di), this.vy(b))
-			this.graphics.lineTo(this.vx(c + 15 / di), this.vy(b - 5 / di))
-			this.graphics.lineTo(this.vx(c + 30 / di), this.vy(b - 15 / di))
-			this.graphics.strokePath()
+			// GIANT RAT (lines 920-960)
+			this.plotPath([
+				[c + 5 / di, b - 30 / di],
+				[c, b - 25 / di],
+				[c - 5 / di, b - 30 / di],
+				[c - 15 / di, b - 5 / di],
+				[c - 10 / di, b],
+				[c + 10 / di, b],
+				[c + 15 / di, b - 5 / di],
+				[c + 20 / di, b - 5 / di],
+				[c + 10 / di, b],
+				[c + 15 / di, b - 5 / di],
+				[c + 5 / di, b - 30 / di],
+				[c + 10 / di, b - 40 / di],
+				[c + 3 / di + 0.5, b - 35 / di],
+				[c - 3 / di + 0.5, b - 35 / di],
+				[c - 10 / di, b - 40 / di],
+				[c - 5 / di, b - 30 / di]
+			])
+			this.plotLine(c - 5 / di, b - 33 / di, c - 3 / di + 0.5, b - 30 / di)
+			this.plotLine(c + 5 / di, b - 33 / di, c + 3 / di + 0.5, b - 30 / di)
+			this.plotLine(c - 5 / di, b - 20 / di, c - 5 / di, b - 15 / di)
+			this.plotLine(c + 5 / di, b - 20 / di, c + 5 / di, b - 15 / di)
+			this.plotLine(c - 7 / di, b - 20 / di, c - 7 / di, b - 15 / di)
+			this.plotLine(c + 7 / di, b - 20 / di, c + 7 / di, b - 15 / di)
+		} else if (mc === 4) {
+			// ORC (lines 980-1040, as in HID-TRAP.GIF)
+			this.plotPath([
+				[c, b],
+				[c - 15 / di, b],
+				[c - 8 / di, b - 8 / di],
+				[c - 8 / di, b - 15 / di],
+				[c - 15 / di, b - 23 / di],
+				[c - 15 / di, b - 15 / di],
+				[c - 23 / di, b - 23 / di],
+				[c - 23 / di, b - 45 / di],
+				[c - 15 / di, b - 53 / di],
+				[c - 8 / di, b - 53 / di],
+				[c - 15 / di, b - 68 / di],
+				[c - 8 / di, b - 75 / di],
+				[c, b - 75 / di]
+			])
+			this.plotPath([
+				[c, b],
+				[c + 15 / di, b],
+				[c + 8 / di, b - 8 / di],
+				[c + 8 / di, b - 15 / di],
+				[c + 15 / di, b - 23 / di],
+				[c + 15 / di, b - 15 / di],
+				[c + 23 / di, b - 23 / di],
+				[c + 23 / di, b - 45 / di],
+				[c + 15 / di, b - 53 / di],
+				[c + 8 / di, b - 53 / di],
+				[c + 15 / di, b - 68 / di],
+				[c + 8 / di, b - 75 / di],
+				[c, b - 75 / di]
+			])
+			this.plotLine(c - 15 / di, b - 68 / di, c + 15 / di, b - 68 / di)
+			this.plotLine(c - 8 / di, b - 53 / di, c + 8 / di, b - 53 / di)
+			this.plotLine(c - 23 / di, b - 15 / di, c + 8 / di, b - 45 / di)
+			this.plotPath([
+				[c - 8 / di, b - 68 / di],
+				[c, b - 60 / di],
+				[c + 8 / di, b - 68 / di],
+				[c + 8 / di, b - 60 / di],
+				[c - 8 / di, b - 60 / di],
+				[c - 8 / di, b - 68 / di]
+			])
+			this.plotPath([
+				[c, b - 38 / di],
+				[c - 8 / di, b - 38 / di],
+				[c + 8 / di, b - 53 / di],
+				[c + 8 / di, b - 45 / di],
+				[c + 15 / di, b - 45 / di],
+				[c, b - 30 / di],
+				[c, b - 38 / di]
+			])
+		} else if (mc === 5) {
+			// VIPER (lines 1060-1130)
+			this.graphics.lineStyle(2, this.COLOR_WHITE, 1)
+			this.plotPath([
+				[c - 10 / di, b - 15 / di],
+				[c - 10 / di, b - 30 / di],
+				[c - 15 / di, b - 20 / di],
+				[c - 15 / di, b - 15 / di],
+				[c - 15 / di, b],
+				[c + 15 / di, b],
+				[c + 15 / di, b - 15 / di],
+				[c - 15 / di, b - 15 / di]
+			])
+			this.plotLine(c - 15 / di, b - 10 / di, c + 15 / di, b - 10 / di)
+			this.plotLine(c - 15 / di, b - 5 / di, c + 15 / di, b - 5 / di)
+			this.plotPath([
+				[c, b - 15 / di],
+				[c - 5 / di, b - 20 / di],
+				[c - 5 / di, b - 35 / di],
+				[c + 5 / di, b - 35 / di],
+				[c + 5 / di, b - 20 / di],
+				[c + 10 / di, b - 15 / di]
+			])
+			this.plotLine(c - 5 / di, b - 20 / di, c + 5 / di, b - 20 / di)
+			this.plotLine(c - 5 / di, b - 25 / di, c + 5 / di, b - 25 / di)
+			this.plotLine(c - 5 / di, b - 30 / di, c + 5 / di, b - 30 / di)
+			this.plotPath([
+				[c - 10 / di, b - 35 / di],
+				[c - 10 / di, b - 40 / di],
+				[c - 5 / di, b - 45 / di],
+				[c + 5 / di, b - 45 / di],
+				[c + 10 / di, b - 40 / di],
+				[c + 10 / di, b - 35 / di]
+			])
+			this.plotPath([
+				[c - 10 / di, b - 40 / di],
+				[c, b - 45 / di],
+				[c + 10 / di, b - 40 / di]
+			])
+			this.plotPath([
+				[c - 5 / di, b - 40 / di],
+				[c + 5 / di, b - 40 / di],
+				[c + 15 / di, b - 30 / di],
+				[c, b - 40 / di],
+				[c - 15 / di, b - 30 / di],
+				[c - 5 / di + 0.5, b - 40 / di]
+			])
+		} else if (mc === 6) {
+			// CARRION CRAWLER (lines 1140-1200)
+			this.graphics.lineStyle(2, this.COLOR_WHITE, 1)
+			this.plotPath([
+				[c - 20 / di, 79 - this.YY[di]],
+				[c - 20 / di, b - 88 / di],
+				[c - 10 / di, b - 83 / di],
+				[c + 10 / di, b - 83 / di],
+				[c + 20 / di, b - 88 / di],
+				[c + 20 / di, 79 - this.YY[di]],
+				[c - 20 / di, 79 - this.YY[di]]
+			])
+			this.plotPath([
+				[c - 20 / di, b - 88 / di],
+				[c - 30 / di, b - 83 / di],
+				[c - 30 / di, b - 78 / di]
+			])
+			this.plotPath([
+				[c + 20 / di, b - 88 / di],
+				[c + 30 / di, b - 83 / di],
+				[c + 40 / di, b - 83 / di]
+			])
+			this.plotPath([
+				[c - 15 / di, b - 86 / di],
+				[c - 20 / di, b - 83 / di],
+				[c - 20 / di, b - 78 / di],
+				[c - 30 / di, b - 73 / di],
+				[c - 30 / di, b - 68 / di],
+				[c - 20 / di, b - 63 / di]
+			])
+			this.plotPath([
+				[c - 10 / di, b - 83 / di],
+				[c - 10 / di, b - 58 / di],
+				[c, b - 50 / di]
+			])
+			this.plotPath([
+				[c + 10 / di, b - 83 / di],
+				[c + 10 / di, b - 78 / di],
+				[c + 20 / di, b - 73 / di],
+				[c + 20 / di, b - 40 / di]
+			])
+			this.plotPath([
+				[c + 15 / di, b - 85 / di],
+				[c + 20 / di, b - 78 / di],
+				[c + 30 / di, b - 76 / di],
+				[c + 30 / di, b - 60 / di]
+			])
+			this.plotPath([
+				[c, b - 83 / di],
+				[c, b - 73 / di],
+				[c + 10 / di, b - 68 / di],
+				[c + 10 / di, b - 63 / di],
+				[c, b - 58 / di]
+			])
+		} else if (mc === 7) {
+			// GREMLIN (lines 1210-1250)
+			this.graphics.lineStyle(2, this.COLOR_WHITE, 1)
+			this.plotPath([
+				[c + 5 / di + 0.5, b - 10 / di],
+				[c - 5 / di + 0.5, b - 10 / di],
+				[c, b - 15 / di],
+				[c + 10 / di, b - 20 / di],
+				[c + 5 / di + 0.5, b - 15 / di],
+				[c + 5 / di + 0.5, b - 10 / di],
+				[c + 7 / di + 0.5, b - 6 / di],
+				[c + 5 / di + 0.5, b - 3 / di],
+				[c - 5 / di + 0.5, b - 3 / di],
+				[c - 7 / di + 0.5, b - 6 / di],
+				[c - 5 / di + 0.5, b - 10 / di]
+			])
+			this.plotPath([
+				[c + 2 / di + 0.5, b - 3 / di],
+				[c + 5 / di + 0.5, b],
+				[c + 8 / di, b]
+			])
+			this.plotPath([
+				[c - 2 / di + 0.5, b - 3 / di],
+				[c - 5 / di + 0.5, b],
+				[c - 8 / di, b]
+			])
+			this.plotLine(c + 3 / di + 0.5, b - 8 / di, c - 3 / di + 0.5, b - 8 / di)
+			this.plotLine(c + 3 / di + 0.5, b - 5 / di, c - 3 / di + 0.5, b - 5 / di)
 		} else if (mc === 8) {
-			// MIMIC
+			// MIMIC (lines 1260-1290 - appears as a chest)
 			this.drawChest(dis)
-		} else {
-			// Other monsters
-			this.graphics.beginPath()
-			this.graphics.moveTo(this.vx(c), this.vy(b - 75 / di))
-			this.graphics.lineTo(this.vx(c - 20 / di), this.vy(b - 50 / di))
-			this.graphics.lineTo(this.vx(c - 30 / di), this.vy(b - 20 / di))
-			this.graphics.lineTo(this.vx(c - 15 / di), this.vy(b))
-			this.graphics.lineTo(this.vx(c + 15 / di), this.vy(b))
-			this.graphics.lineTo(this.vx(c + 30 / di), this.vy(b - 20 / di))
-			this.graphics.lineTo(this.vx(c + 20 / di), this.vy(b - 50 / di))
-			this.graphics.closePath()
-
-			this.graphics.moveTo(this.vx(c - 20 / di), this.vy(b - 50 / di))
-			this.graphics.lineTo(this.vx(c - 40 / di), this.vy(b - 80 / di))
-			this.graphics.lineTo(this.vx(c - 10 / di), this.vy(b - 65 / di))
-
-			this.graphics.moveTo(this.vx(c + 20 / di), this.vy(b - 50 / di))
-			this.graphics.lineTo(this.vx(c + 40 / di), this.vy(b - 80 / di))
-			this.graphics.lineTo(this.vx(c + 10 / di), this.vy(b - 65 / di))
-			this.graphics.strokePath()
+		} else if (mc === 9) {
+			// DAEMON (lines 1300-1420 & 2870-2910)
+			this.graphics.lineStyle(2, this.COLOR_WHITE, 1)
+			this.plotPath([
+				[c - 14 / di, b - 46 / di],
+				[c - 12 / di, b - 37 / di],
+				[c - 20 / di, b - 32 / di],
+				[c - 30 / di, b - 32 / di],
+				[c - 22 / di, b - 24 / di],
+				[c - 40 / di, b - 17 / di],
+				[c - 40 / di, b - 7 / di],
+				[c - 38 / di, b - 5 / di],
+				[c - 40 / di, b - 3 / di],
+				[c - 40 / di, b],
+				[c - 36 / di, b],
+				[c - 34 / di, b - 2 / di],
+				[c - 32 / di, b],
+				[c - 28 / di, b],
+				[c - 28 / di, b - 3 / di],
+				[c - 30 / di, b - 5 / di],
+				[c - 28 / di, b - 7 / di],
+				[c - 28 / di, b - 15 / di],
+				[c, b - 27 / di]
+			])
+			this.plotPath([
+				[c + 14 / di, b - 46 / di],
+				[c + 12 / di, b - 37 / di],
+				[c + 20 / di, b - 32 / di],
+				[c + 30 / di, b - 32 / di],
+				[c + 22 / di, b - 24 / di],
+				[c + 40 / di, b - 17 / di],
+				[c + 40 / di, b - 7 / di],
+				[c + 38 / di, b - 5 / di],
+				[c + 40 / di, b - 3 / di],
+				[c + 40 / di, b],
+				[c + 36 / di, b],
+				[c + 34 / di, b - 2 / di],
+				[c + 32 / di, b],
+				[c + 28 / di, b],
+				[c + 28 / di, b - 3 / di],
+				[c + 30 / di, b - 5 / di],
+				[c + 28 / di, b - 7 / di],
+				[c + 28 / di, b - 15 / di],
+				[c, b - 27 / di]
+			])
+			this.plotPath([
+				[c + 6 / di, b - 48 / di],
+				[c + 38 / di, b - 41 / di],
+				[c + 40 / di, b - 42 / di],
+				[c + 18 / di, b - 56 / di],
+				[c + 12 / di, b - 56 / di],
+				[c + 10 / di, b - 57 / di],
+				[c + 8 / di, b - 56 / di],
+				[c - 8 / di, b - 56 / di],
+				[c - 10 / di, b - 58 / di],
+				[c + 14 / di, b - 58 / di],
+				[c + 16 / di, b - 59 / di],
+				[c + 8 / di, b - 63 / di],
+				[c + 6 / di, b - 63 / di],
+				[c + 2 / di + 0.5, b - 70 / di],
+				[c + 2 / di + 0.5, b - 63 / di],
+				[c - 2 / di + 0.5, b - 63 / di],
+				[c - 2 / di + 0.5, b - 70 / di],
+				[c - 6 / di, b - 63 / di],
+				[c - 8 / di, b - 63 / di],
+				[c - 16 / di, b - 59 / di],
+				[c - 14 / di, b - 58 / di],
+				[c - 10 / di, b - 57 / di],
+				[c - 12 / di, b - 56 / di],
+				[c - 18 / di, b - 56 / di],
+				[c - 36 / di, b - 47 / di],
+				[c - 36 / di, b - 39 / di],
+				[c - 28 / di, b - 41 / di],
+				[c - 28 / di, b - 46 / di],
+				[c - 20 / di, b - 50 / di],
+				[c - 18 / di, b - 50 / di],
+				[c - 14 / di, b - 46 / di]
+			])
+			this.plotLine(c - 28 / di, b - 41 / di, c + 30 / di, b - 55 / di)
+			this.plotPath([
+				[c + 28 / di, b - 58 / di],
+				[c + 22 / di, b - 56 / di],
+				[c + 22 / di, b - 53 / di],
+				[c + 28 / di, b - 52 / di],
+				[c + 34 / di, b - 54 / di]
+			])
+			this.plotLine(c + 20 / di, b - 50 / di, c + 26 / di, b - 47 / di)
+			this.plotPath([
+				[c + 10 / di, b - 58 / di],
+				[c + 10 / di, b - 61 / di],
+				[c + 4 / di, b - 58 / di]
+			])
+			this.plotPath([
+				[c - 10 / di, b - 58 / di],
+				[c - 10 / di, b - 61 / di],
+				[c - 4 / di, b - 58 / di]
+			])
+			this.plotPath([
+				[c + 40 / di, b - 9 / di],
+				[c + 50 / di, b - 12 / di],
+				[c + 40 / di, b - 7 / di]
+			])
+			this.plotPath([
+				[c - 8 / di, b - 25 / di],
+				[c + 6 / di, b - 7 / di],
+				[c + 28 / di, b - 7 / di],
+				[c + 28 / di, b - 9 / di],
+				[c + 20 / di, b - 9 / di],
+				[c + 6 / di, b - 25 / di]
+			])
+		} else if (mc === 10) {
+			// BALROG (lines 1430-1530)
+			this.graphics.lineStyle(2, this.COLOR_WHITE, 1)
+			this.plotPath([
+				[c + 6 / di, b - 60 / di],
+				[c + 30 / di, b - 90 / di],
+				[c + 60 / di, b - 30 / di],
+				[c + 60 / di, b - 10 / di],
+				[c + 30 / di, b - 40 / di],
+				[c + 15 / di, b - 40 / di]
+			])
+			this.plotPath([
+				[c - 6 / di, b - 60 / di],
+				[c - 30 / di, b - 90 / di],
+				[c - 60 / di, b - 30 / di],
+				[c - 60 / di, b - 10 / di],
+				[c - 30 / di, b - 40 / di],
+				[c - 15 / di, b - 40 / di]
+			])
+			this.plotPath([
+				[c, b - 25 / di],
+				[c + 6 / di, b - 25 / di],
+				[c + 10 / di, b - 20 / di],
+				[c + 12 / di, b - 10 / di],
+				[c + 10 / di, b - 6 / di],
+				[c + 10 / di, b],
+				[c + 14 / di, b],
+				[c + 15 / di, b - 5 / di],
+				[c + 16 / di, b],
+				[c + 20 / di, b],
+				[c + 20 / di, b - 6 / di],
+				[c + 18 / di, b - 10 / di],
+				[c + 18 / di, b - 20 / di],
+				[c + 15 / di, b - 30 / di],
+				[c + 15 / di, b - 45 / di],
+				[c + 40 / di, b - 60 / di],
+				[c + 40 / di, b - 70 / di],
+				[c + 10 / di, b - 55 / di],
+				[c + 6 / di, b - 60 / di],
+				[c + 10 / di, b - 74 / di],
+				[c + 6 / di, b - 80 / di],
+				[c + 4 / di + 0.5, b - 80 / di],
+				[c + 3 / di + 0.5, b - 82 / di],
+				[c + 2 / di + 0.5, b - 80 / di],
+				[c, b - 80 / di]
+			])
+			this.plotPath([
+				[c, b - 25 / di],
+				[c - 6 / di, b - 25 / di],
+				[c - 10 / di, b - 20 / di],
+				[c - 12 / di, b - 10 / di],
+				[c - 10 / di, b - 6 / di],
+				[c - 10 / di, b],
+				[c - 14 / di, b],
+				[c - 15 / di, b - 5 / di],
+				[c - 16 / di, b],
+				[c - 20 / di, b],
+				[c - 20 / di, b - 6 / di],
+				[c - 18 / di, b - 10 / di],
+				[c - 18 / di, b - 20 / di],
+				[c - 15 / di, b - 30 / di],
+				[c - 15 / di, b - 45 / di],
+				[c - 40 / di, b - 60 / di],
+				[c - 40 / di, b - 70 / di],
+				[c - 10 / di, b - 55 / di],
+				[c - 6 / di, b - 60 / di],
+				[c - 10 / di, b - 74 / di],
+				[c - 6 / di, b - 80 / di],
+				[c - 4 / di + 0.5, b - 80 / di],
+				[c - 3 / di + 0.5, b - 82 / di],
+				[c - 2 / di + 0.5, b - 80 / di],
+				[c, b - 80 / di]
+			])
+			this.plotPath([
+				[c - 6 / di, b - 25 / di],
+				[c, b - 6 / di],
+				[c + 10 / di, b],
+				[c + 4 / di + 0.5, b - 8 / di],
+				[c + 6 / di, b - 25 / di]
+			])
+			this.plotPath([
+				[c - 40 / di, b - 64 / di],
+				[c - 40 / di, b - 90 / di],
+				[c - 52 / di, b - 80 / di],
+				[c - 52 / di, b - 40 / di]
+			])
+			this.plotPath([
+				[c + 40 / di, b - 86 / di],
+				[c + 38 / di, b - 92 / di],
+				[c + 42 / di, b - 92 / di],
+				[c + 40 / di, b - 86 / di],
+				[c + 40 / di, b - 50 / di]
+			])
+			this.plotLine(c + 4 / di + 0.5, b - 70 / di, c + 6 / di, b - 74 / di)
+			this.plotLine(c - 4 / di + 0.5, b - 70 / di, c - 6 / di, b - 74 / di)
+			this.plotLine(c, b - 64 / di, c, b - 60 / di)
 		}
 
 		this.graphics.lineStyle(2, this.COLOR_GREEN, 1)
