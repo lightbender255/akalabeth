@@ -159,6 +159,9 @@ export default class AkalabethScene extends Phaser.Scene {
 			}
 		})
 
+		// Initial legend update
+		this.updateKeyLegend()
+
 		// Keyboard event listener
 		this.input.keyboard.on('keydown', (event) => this.handleKeyDown(event))
 
@@ -404,6 +407,176 @@ export default class AkalabethScene extends Phaser.Scene {
 				}
 			}
 		})
+	}
+
+	updateKeyLegend() {
+		if (typeof document === 'undefined') return
+		const contextElem = document.getElementById('legend-context')
+		const keysElem = document.getElementById('legend-keys')
+		if (!contextElem || !keysElem) return
+
+		let contextTitle = ''
+		let keyList = []
+
+		switch (this.currentState) {
+			case this.STATE_LUCKY:
+				contextTitle = 'STARTUP: LUCKY NUMBER'
+				keyList = [
+					{ key: '0 - 9', desc: 'Type number' },
+					{ key: 'ENTER', desc: 'Confirm' },
+					{ key: 'BKSP', desc: 'Erase digit' },
+					{ key: 'D', desc: 'Dev Mode (6,1,Y)' }
+				]
+				break
+
+			case this.STATE_LEVEL:
+				contextTitle = 'STARTUP: LEVEL OF PLAY'
+				keyList = [
+					{ key: '1 - 10', desc: 'Difficulty' },
+					{ key: 'ENTER', desc: 'Confirm' },
+					{ key: 'BKSP', desc: 'Erase digit' }
+				]
+				break
+
+			case this.STATE_CHAR_GEN:
+				contextTitle = 'CHARACTER QUALITIES'
+				keyList = [
+					{ key: 'Y', desc: 'Accept qualities' },
+					{ key: 'N', desc: 'Re-roll qualities' }
+				]
+				break
+
+			case this.STATE_CHOOSE_CLASS:
+				contextTitle = 'CHOOSE CLASS'
+				keyList = [
+					{ key: 'F', desc: 'Fighter (Weapons)' },
+					{ key: 'M', desc: 'Mage (Amulet magic)' }
+				]
+				break
+
+			case this.STATE_SHOP:
+				contextTitle = 'ADVENTURE SHOP'
+				keyList = [
+					{ key: 'F', desc: 'Buy Food (1g / 10)' },
+					{ key: 'R', desc: 'Buy Rapier (8g)' },
+					{ key: 'A', desc: 'Buy Axe (5g)' },
+					{ key: 'S', desc: 'Buy Shield (6g)' },
+					{ key: 'B', desc: 'Buy Bow (3g)' },
+					{ key: 'M', desc: 'Buy Amulet (15g)' },
+					{ key: 'Q', desc: 'Quit to World' }
+				]
+				break
+
+			case this.STATE_OVERLAND:
+				contextTitle = 'OVERLAND MAP'
+				keyList = [
+					{ key: '↑ / W / N', desc: 'Move North' },
+					{ key: '↓ / S', desc: 'Move South' },
+					{ key: '← / A', desc: 'Move West' },
+					{ key: '→ / D / E', desc: 'Move East' },
+					{ key: 'ENTER / X', desc: 'Enter Location' },
+					{ key: 'SPACE / P', desc: 'Pass Turn (-1 Food)' },
+					{ key: 'TAB / I', desc: 'Stats / Inventory' }
+				]
+				break
+
+			case this.STATE_DUNGEON:
+				contextTitle = `3D DUNGEON: LVL ${this.INOUT}`
+				keyList = [
+					{ key: '↑ / W / F', desc: 'Move Forward' },
+					{ key: '← / A / L', desc: 'Turn Left' },
+					{ key: '→ / D / R', desc: 'Turn Right' },
+					{ key: '↓ / T', desc: 'Turn Around' },
+					{ key: 'A', desc: 'Attack Monster' },
+					{ key: 'ENTER / X', desc: 'Climb Ladder' },
+					{ key: 'SPACE / P', desc: 'Pass Turn' },
+					{ key: 'TAB / I', desc: 'Stats / Inventory' }
+				]
+				break
+
+			case this.STATE_ATTACK:
+				contextTitle = 'COMBAT: WEAPON'
+				keyList = [
+					{ key: 'R', desc: 'Rapier (1-10 Dmg)' },
+					{ key: 'A', desc: 'Axe (1-5 Dmg)' },
+					{ key: 'S', desc: 'Shield (1 Dmg)' },
+					{ key: 'B', desc: 'Bow & Arrows (1-4 Dmg)' },
+					{ key: 'M', desc: 'Magic Amulet' },
+					{ key: 'H', desc: 'Bare Hands (2 Dmg)' }
+				]
+				break
+
+			case this.STATE_AXE_CHOICE:
+				contextTitle = 'AXE ATTACK'
+				keyList = [
+					{ key: 'S', desc: 'Swing (Melee)' },
+					{ key: 'T', desc: 'Throw (Ranged, -1 axe)' }
+				]
+				break
+
+			case this.STATE_AMULET_CHOICE:
+				contextTitle = 'MAGIC AMULET'
+				keyList = [
+					{ key: '1', desc: 'Ladder Up' },
+					{ key: '2', desc: 'Ladder Down' },
+					{ key: '3', desc: 'Magic Attack' },
+					{ key: '4', desc: 'Transformation' }
+				]
+				break
+
+			case this.STATE_CASTLE_NAME:
+				contextTitle = 'LORD BRITISH CASTLE'
+				keyList = [
+					{ key: 'A - Z', desc: 'Type Peasant Name' },
+					{ key: 'ENTER', desc: 'Confirm Name' },
+					{ key: 'BKSP', desc: 'Erase letter' }
+				]
+				break
+
+			case this.STATE_CASTLE_ADVENTURE:
+				contextTitle = 'LORD BRITISH CASTLE'
+				keyList = [
+					{ key: 'Y', desc: 'Accept Adventure' },
+					{ key: 'N', desc: 'Decline and Leave' }
+				]
+				break
+
+			case this.STATE_CASTLE_DIALOG:
+				contextTitle = 'LORD BRITISH CASTLE'
+				keyList = [
+					{ key: 'SPACE', desc: 'Return to Overland' }
+				]
+				break
+
+			case this.STATE_STATS_VIEW:
+				contextTitle = 'STATS & WEAPONS'
+				keyList = [
+					{ key: 'SPACE / ESC', desc: 'Return to Game' }
+				]
+				break
+
+			case this.STATE_DEAD:
+				contextTitle = 'DEATH OF PEASANT'
+				keyList = [
+					{ key: 'ESC / SPACE', desc: 'Resurrection' }
+				]
+				break
+
+			default:
+				contextTitle = 'GAME'
+				keyList = []
+		}
+
+		contextElem.textContent = contextTitle
+		keysElem.innerHTML = keyList
+			.map(
+				(item) => `
+			<div class="key-row">
+				<span class="key-badge">${item.key}</span>
+				<span class="key-desc">${item.desc}</span>
+			</div>`
+			)
+			.join('')
 	}
 
 	enterOverland() {
@@ -1442,6 +1615,7 @@ export default class AkalabethScene extends Phaser.Scene {
 	}
 
 	updateHGRText() {
+		this.updateKeyLegend()
 		this.hgrTextLeft1.setText(this.hgrLine1)
 		this.hgrTextLeft2.setText(this.hgrLine2)
 
@@ -1454,6 +1628,7 @@ export default class AkalabethScene extends Phaser.Scene {
 	}
 
 	renderScreen() {
+		this.updateKeyLegend()
 		const cursor = this.cursorVisible ? '█' : ' '
 
 		if (this.screenMode === 'GRAPHICS') {

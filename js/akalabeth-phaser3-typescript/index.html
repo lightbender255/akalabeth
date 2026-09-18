@@ -13,26 +13,112 @@
 		}
 
 		body {
-			background: #000;
+			background: #020502;
 			color: #33ff33;
 			font-family: 'Courier New', Courier, monospace;
 			display: flex;
-			flex-direction: column;
 			justify-content: center;
 			align-items: center;
 			min-height: 100vh;
-			overflow: hidden;
+			overflow-x: auto;
+			padding: 20px;
+		}
+
+		.game-wrapper {
+			display: flex;
+			flex-direction: row;
+			align-items: flex-start;
+			justify-content: center;
+			gap: 24px;
 		}
 
 		#app {
 			box-shadow: 0 0 20px rgba(51, 255, 51, 0.25);
 			border: 2px solid #1a5c1a;
+			width: 800px;
+			height: 600px;
+		}
+
+		#legend-panel {
+			width: 290px;
+			height: 600px;
+			background: #040d04;
+			border: 2px solid #1a5c1a;
+			box-shadow: 0 0 20px rgba(51, 255, 51, 0.15);
+			padding: 16px;
+			display: flex;
+			flex-direction: column;
+			user-select: none;
+		}
+
+		.legend-title {
+			color: #55ff55;
+			font-size: 17px;
+			font-weight: bold;
+			text-align: center;
+			letter-spacing: 2px;
+			padding-bottom: 8px;
+			border-bottom: 2px solid #1a5c1a;
+			text-shadow: 0 0 8px rgba(51, 255, 51, 0.6);
+		}
+
+		.legend-context {
+			color: #ffff55;
+			font-size: 13px;
+			font-weight: bold;
+			text-align: center;
+			padding: 10px 0;
+			letter-spacing: 1px;
+			border-bottom: 1px dashed #1a5c1a;
+			margin-bottom: 12px;
+		}
+
+		.legend-keys {
+			display: flex;
+			flex-direction: column;
+			gap: 9px;
+			overflow-y: auto;
+			flex: 1;
+		}
+
+		.key-row {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			font-size: 13px;
+			line-height: 1.3;
+		}
+
+		.key-badge {
+			background: #0d260d;
+			color: #ffffff;
+			border: 1px solid #33ff33;
+			border-radius: 3px;
+			padding: 2px 6px;
+			font-weight: bold;
+			font-size: 12px;
+			white-space: nowrap;
+			box-shadow: 0 0 5px rgba(51, 255, 51, 0.3);
+		}
+
+		.key-desc {
+			color: #88ff88;
+			text-align: right;
+			margin-left: 8px;
 		}
 	</style>
 </head>
 
 <body>
-	<div id="app"></div>
+	<div class="game-wrapper">
+		<div id="app"></div>
+		<div id="legend-panel">
+			<div class="legend-title">KEY LEGEND</div>
+			<div id="legend-context" class="legend-context">STARTUP</div>
+			<div id="legend-keys" class="legend-keys"></div>
+		</div>
+	</div>
 	<script type="module" src="src/main.js"></script>
 </body>
 
