@@ -64,7 +64,7 @@ export default class AkalabethScene extends Phaser.Scene {
 			'BOW AND ARROWS',
 			'MAGIC AMULET'
 		]
-		this.PW = [0, 0, 0, 0, 0, 0]
+		this.PW = [20, 0, 0, 0, 0, 0] // Start with 20 rations of food
 
 		// Monsters M$(1..10)
 		this.M_NAMES = [
@@ -270,6 +270,11 @@ export default class AkalabethScene extends Phaser.Scene {
 		// 3640 FOR X = 0 TO 5: C(X) = INT(SQR(RND(1)) * 21 + 4): NEXT X
 		for (let i = 0; i < 6; i++) {
 			this.C[i] = Math.floor(Math.sqrt(Math.random()) * 21 + 4)
+		}
+		// Ensure starting HP and food are sufficient for adventure
+		this.C[0] = Math.max(10, this.C[0])
+		if (this.PW[0] < 20) {
+			this.PW[0] = 20
 		}
 		this.currentState = this.STATE_CHAR_GEN
 		this.renderScreen()
@@ -1184,6 +1189,13 @@ export default class AkalabethScene extends Phaser.Scene {
 	}
 
 	handleKeyDown(event) {
+		// Ignore browser auto-repeat for turn-based gameplay so holding a key doesn't burn all food
+		if (event.repeat) {
+			if (event.key !== 'Backspace') {
+				return
+			}
+		}
+
 		const key = event.key
 
 		// ----------------------------------------------------
@@ -1313,7 +1325,7 @@ export default class AkalabethScene extends Phaser.Scene {
 
 			if (this.currentState === this.STATE_DEAD) {
 				if (key === 'Escape' || key === ' ' || key === 'Enter') {
-					this.PW = [0, 0, 0, 0, 0, 0]
+					this.PW = [20, 0, 0, 0, 0, 0]
 					this.INOUT = 0
 					this.TASK = 0
 					this.startLuckyNumber()
@@ -1359,7 +1371,7 @@ export default class AkalabethScene extends Phaser.Scene {
 			let dx = 0,
 				dy = 0
 
-			if (key === 'ArrowUp' || k === 'W' || k === 'N' || key === 'Enter') {
+			if (key === 'ArrowUp' || k === 'W' || k === 'N') {
 				this.hgrLine1 = 'NORTH'
 				dy = -1
 				moved = true
@@ -1375,7 +1387,7 @@ export default class AkalabethScene extends Phaser.Scene {
 				this.hgrLine1 = 'EAST'
 				dx = 1
 				moved = true
-			} else if (k === 'X') {
+			} else if (k === 'X' || key === 'Enter') {
 				// Enter location (216 in BASIC)
 				const tile = this.TE[this.TX][this.TY]
 				if (tile === 3) {
@@ -1398,8 +1410,8 @@ export default class AkalabethScene extends Phaser.Scene {
 				this.hgrLine2 = ''
 				this.endTurn()
 				return
-			} else if (k === 'S') {
-				// 1880 IF X = 211 THEN 2750 (Stats screen)
+			} else if (k === 'I' || k === 'TAB') {
+				// Stats screen
 				this.setScreenMode('TEXT')
 				this.currentState = this.STATE_STATS_VIEW
 				this.renderScreen()
@@ -1785,9 +1797,15 @@ export default class AkalabethScene extends Phaser.Scene {
 
 	endTurn() {
 		// 1920 PW(0) = PW(0) - 1 + SGN(INOUT) * .9
-		this.PW[0] = this.PW[0] - 1 + Math.sign(this.INOUT) * 0.9
+		const cost = this.INOUT > 0 ? 0.1 : 1.0
 
-		if (this.PW[0] < 0) {
+		if (this.PW[0] > 0) {
+			this.PW[0] = Math.max(0, this.PW[0] - cost)
+			if (this.PW[0] === 0) {
+				this.hgrLine2 = 'OUT OF FOOD! THOU ART STARVING!'
+			}
+		} else {
+			// Moved with 0 food: starvation death
 			this.C[0] = 0
 			this.hgrLine1 = 'YOU HAVE STARVED!!!!!'
 		}
