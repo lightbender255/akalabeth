@@ -162,8 +162,27 @@ export default class AkalabethScene extends Phaser.Scene {
 		// Keyboard event listener
 		this.input.keyboard.on('keydown', (event) => this.handleKeyDown(event))
 
+		// Check for dev mode via URL query parameter (?dev)
+		const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
+		if (urlParams && urlParams.has('dev')) {
+			this.activateDevMode()
+			return
+		}
+
 		// Start game at Lucky Number input
 		this.startLuckyNumber()
+	}
+
+	activateDevMode() {
+		this.isDevMode = true
+		this.LN = 6 // Lucky Number: 6
+		this.LP = 1 // Level: 1
+		this.rollAttributes() // Roll qualities
+		this.C[5] = Math.max(50, this.C[5]) // Generous gold for testing items
+		this.PT = 'F' // Class: Fighter
+		this.openAdventureShop()
+		this.shopFeedback = '[DEV MODE ACTIVATED: 6, 1, Y]'
+		this.renderScreen()
 	}
 
 	initPerspectiveTables() {
@@ -998,7 +1017,9 @@ export default class AkalabethScene extends Phaser.Scene {
 				'',
 				'',
 				'',
-				`TYPE THY LUCKY NUMBER.....${this.inputBuffer}${cursor}`
+				`TYPE THY LUCKY NUMBER.....${this.inputBuffer}${cursor}`,
+				'',
+				'  (PRESS [D] FOR DEV MODE: 6, 1, Y)'
 			].join('\n'))
 		} else if (this.currentState === this.STATE_LEVEL) {
 			this.textScreen.setText([
@@ -1221,6 +1242,11 @@ export default class AkalabethScene extends Phaser.Scene {
 		// ----------------------------------------------------
 		if (this.screenMode === 'TEXT') {
 			if (this.currentState === this.STATE_LUCKY) {
+				const k = key.toUpperCase()
+				if (k === 'D') {
+					this.activateDevMode()
+					return
+				}
 				if (key === 'Enter') {
 					const val = parseInt(this.inputBuffer)
 					if (!isNaN(val)) {
