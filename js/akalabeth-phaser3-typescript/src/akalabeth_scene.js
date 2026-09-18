@@ -177,12 +177,17 @@ export default class AkalabethScene extends Phaser.Scene {
 		this.isDevMode = true
 		this.LN = 6 // Lucky Number: 6
 		this.LP = 1 // Level: 1
-		this.rollAttributes() // Roll qualities
-		this.C[5] = Math.max(50, this.C[5]) // Generous gold for testing items
+		this.rollAttributes() // Roll qualities: Y
+		this.C[5] = Math.max(50, this.C[5])
 		this.PT = 'F' // Class: Fighter
-		this.openAdventureShop()
-		this.shopFeedback = '[DEV MODE ACTIVATED: 6, 1, Y]'
-		this.renderScreen()
+
+		// Shop purchases: F (Food), S (Shield), R (Rapier)
+		this.buyShopItem('F')
+		this.buyShopItem('S')
+		this.buyShopItem('R')
+
+		// Q: Quit shop and launch world generation directly into overland
+		this.startWorldGeneration()
 	}
 
 	initPerspectiveTables() {
@@ -1019,7 +1024,7 @@ export default class AkalabethScene extends Phaser.Scene {
 				'',
 				`TYPE THY LUCKY NUMBER.....${this.inputBuffer}${cursor}`,
 				'',
-				'  (PRESS [D] FOR DEV MODE: 6, 1, Y)'
+				'  (PRESS [D] FOR DEV MODE: 6, 1, Y, F, S, R, Q)'
 			].join('\n'))
 		} else if (this.currentState === this.STATE_LEVEL) {
 			this.textScreen.setText([
